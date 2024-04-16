@@ -1,0 +1,48 @@
+task_name = "train" # "infer"/"train"/"server"
+
+[logger]
+environment="dev"
+
+[server]
+host = "0.0.0.0"
+port = 8000
+
+[vit_model]
+pretrained_model_name_or_path = "google/vit-base-patch16-224-in21k"
+ignore_mismatched_sizes = true
+
+[data]
+path = "food101"
+split = "train[:5000]"
+test_size = 0.1
+
+[paths]
+output_dir = "outputs/"
+log_dir = "outputs/logs/"
+
+[lora]
+r = 16
+lora_alpha = 16
+target_modules = ["query", "value"]
+lora_dropout = 0.1
+bias = "none"
+modules_to_save = ["classifier"]
+
+[vit_trainer]
+remove_unused_columns = false
+gradient_accumulation_steps = 4
+batch_size = 128
+learning_rate = 5e-3
+logging_steps = 10
+fp16 = true
+save_strategy = "epoch"
+evaluation_strategy = "epoch"
+num_train_epochs = 5
+load_best_model_at_end = true
+metric_for_best_model = "accuracy"
+label_names = ["labels"]
+report_to = "tensorboard"
+
+[hf]
+push_huggingface = false
+hf_model_id = "sh-aidev/vit-base-patch16-224-in21k-food101-lora"
