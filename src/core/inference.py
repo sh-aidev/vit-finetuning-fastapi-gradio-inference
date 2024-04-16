@@ -101,8 +101,14 @@ class VITInferenceHF():
         with torch.no_grad():
             outputs = self.model(**encoding)
             logits = outputs.logits
+            prediction = torch.nn.functional.softmax(logits, dim=-1)
         
-        predicted_class_idx = logits.argmax(-1).item()
-        logger.info(f"Predicted class: {self.model.config.id2label[predicted_class_idx]}")
+        predicted_class_idx = prediction.argmax(-1).item()
+        # get top k class index
+        top_k = torch.topk(prediction, k=10)
 
-        return {"class": self.model.config.id2label[predicted_class_idx]}
+        confidences = {self.model.config.id2label[i]: float(top_k.values[0].cpu().numpy()[j]) for j, i in enumerate(top_k.indices[0].cpu().numpy())}
+
+        logger.info(f"Top Predicted class: {self.model.config.id2label[predicted_class_idx]}")
+
+        return confidences
