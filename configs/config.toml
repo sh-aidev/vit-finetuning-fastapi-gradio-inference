@@ -1,4 +1,5 @@
-task_name = "infer" # "infer"/"train"/"server"
+task_name = "server" # "infer"/"train"/"server"
+server_type = "gradio" # "fastapi"/"gradio"
 
 [logger]
 environment="dev"

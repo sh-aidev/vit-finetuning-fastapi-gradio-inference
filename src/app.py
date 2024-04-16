@@ -3,7 +3,7 @@ from src.utils.logger import logger
 from src.utils.config import Config
 from src.core.training import FinetuningTraining
 from src.core.inference import VITInference, VITInferenceHF
-# from src.server.server import VITServer
+from src.server.server import VITServer
 
 class App:
     """
@@ -18,8 +18,8 @@ class App:
             self.vit = FinetuningTraining(self.config)
         elif self.config.vit_config.task_name == "infer":
             self.vit = VITInferenceHF(self.config)
-        # elif self.config.vit_config.task_name == "server":
-        #     self.vit = LLMServer(self.config)
+        elif self.config.vit_config.task_name == "server":
+            self.vit = VITServer(self.config)
     
     def run(self):
         if self.config.vit_config.task_name == "infer":
@@ -27,5 +27,10 @@ class App:
                 self.vit.push_to_huggingface()
             image_url = "https://huggingface.co/datasets/sayakpaul/sample-datasets/resolve/main/beignets.jpeg"
             self.vit.run(image_url)
+        elif self.config.vit_config.task_name == "server":
+            if self.config.vit_config.server_type == "fastapi":
+                self.vit.fast_api_serve()
+            else:
+                self.vit.gradio_server()
         else:
             self.vit.run()

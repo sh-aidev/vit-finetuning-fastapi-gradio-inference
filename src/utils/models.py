@@ -49,6 +49,7 @@ class Lora(BaseModel):
 
 class Model(BaseModel):
     task_name: str
+    server_type: str
     logger: Logger
     server: Server
     vit_model: VITModel

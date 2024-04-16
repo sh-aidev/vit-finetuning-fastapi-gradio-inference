@@ -86,16 +86,16 @@ class VITInferenceHF():
         )
         logger.debug(f"Model loaded...")
 
-    def run(self, img: Union[str, Image.Image]) -> Dict[str, str]:
+    def run(self, image: Union[str, Image.Image]) -> Dict[str, str]:
         logger.debug(f"Running inference...")
         
-        if isinstance(img, Image.Image):
-            image = Image.open(img)
-        elif isinstance(img, str):
-            image = Image.open(requests.get(img, stream=True).raw)
+        # if isinstance(img, Image.Image):
+        #     image = Image.open(img)
+        if isinstance(image, str):
+            image = Image.open(requests.get(image, stream=True).raw)
         logger.debug(f"Image loaded...")
         
-        encoding = self.image_processor(image.convert("RGB"), return_tensors="pt")
+        encoding = self.image_processor(image, return_tensors="pt")
         logger.debug(f"Encoding done...")
 
         with torch.no_grad():
