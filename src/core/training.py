@@ -21,7 +21,7 @@ class FinetuningTraining():
         logger.debug(f"Image processor loaded...")
 
         train_ds, val_ds = split_ds(dataset, config.vit_config.data.test_size, image_processor)
-
+        self.val_ds = val_ds
         logger.debug(f"Train and validation datasets split completed...")
         model = AutoModelForImageClassification.from_pretrained(
             config.vit_config.vit_model.pretrained_model_name_or_path,
@@ -89,7 +89,8 @@ class FinetuningTraining():
     
     def run(self):
         logger.debug(f"Training started...")
-        train_results = self.trainer.train()
+        self.trainer.train()
+        self.trainer.evaluate(self.val_ds)
         logger.debug(f"Training completed...")
         logger.debug(f"Saving model...")
         self.trainer.save_model(self.model_dir)

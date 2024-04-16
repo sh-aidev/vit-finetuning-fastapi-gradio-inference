@@ -2,7 +2,7 @@ import os
 from src.utils.logger import logger
 from src.utils.config import Config
 from src.core.training import FinetuningTraining
-# from src.core.inference import VITInference, VITInferenceHF
+from src.core.inference import VITInference, VITInferenceHF
 # from src.server.server import VITServer
 
 class App:
@@ -16,10 +16,16 @@ class App:
         if self.config.vit_config.task_name == "train":
             logger.info("Finetuning mode")
             self.vit = FinetuningTraining(self.config)
-        # elif self.config.vit_config.task_name == "infer":
-        #     self.llm = LLMInferenceHF(self.config)
+        elif self.config.vit_config.task_name == "infer":
+            self.vit = VITInferenceHF(self.config)
         # elif self.config.vit_config.task_name == "server":
-        #     self.llm = LLMServer(self.config)
+        #     self.vit = LLMServer(self.config)
     
     def run(self):
-        self.vit.run()
+        if self.config.vit_config.task_name == "infer":
+            if self.config.vit_config.hf.push_huggingface == True:
+                self.vit.push_to_huggingface()
+            image_url = "https://huggingface.co/datasets/sayakpaul/sample-datasets/resolve/main/beignets.jpeg"
+            self.vit.run(image_url)
+        else:
+            self.vit.run()
